@@ -1,0 +1,169 @@
+package Interface;
+
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+public class main extends JFrame implements Runnable{
+
+    JFrame janela = new JFrame("teste - StopWatch");
+    JMenuBar menubar = new JMenuBar();
+    JCheckBoxMenuItem checkAction = new JCheckBoxMenuItem("Check Action");
+    JPanel painel = new JPanel(new FlowLayout());
+    JPanel painelCounter = new JPanel(new FlowLayout());
+    JPanel painelTextTimer = new JPanel(new FlowLayout());
+    JLabel textTimer = new JLabel();
+    JLabel counter = new JLabel();
+    JButton start = new JButton("START");
+    JButton stop = new JButton("STOP");
+    JButton reset = new JButton("RESET");
+    JButton bandeira = new JButton("COUNTER");
+    Thread th = null;
+    JMenu menu = new JMenu("Menu");
+
+    public main(){
+
+        janela.setSize(600,250);
+        janela.setLocationRelativeTo(null);
+        janela.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        Toolkit tk = Toolkit.getDefaultToolkit();
+        Image img = tk.getImage( "C:/Users/Lucas/Desktop/CampoMinado/img/bomberman2.png");
+        janela.setIconImage(img);
+
+        //menu
+
+        janela.setJMenuBar(menubar);
+        menubar.add(menu);
+
+        JMenuItem newAction = new JMenuItem("New");
+//        JMenuItem openAction = new JMenuItem("Open");
+        JMenuItem exitAction = new JMenuItem("Exit");
+
+        newAction.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                textTimer.setText("0");
+                counter.setText("20");
+                th=null;
+            }
+        });
+
+        exitAction.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.exit(0);
+            }
+        });
+
+        menu.add(newAction);
+//        fileMenu.add(openAction);
+        menu.add(checkAction);
+        menu.addSeparator();
+        menu.add(exitAction);
+
+        //painel principal
+
+        painel.setSize(300,300);
+
+        Font fonte7 = new Font("DS-DIGITAL",Font.BOLD,60);
+
+        textTimer.setFont(fonte7);
+        textTimer.setText("0");
+        textTimer.setForeground(Color.RED);
+
+        painelTextTimer.add(textTimer);
+        painelTextTimer.setBorder(new EmptyBorder(3,3,3,3));
+        painelTextTimer.setBackground(Color.BLACK);
+
+        counter.setFont(fonte7);
+        counter.setText("20");
+        counter.setForeground(Color.RED);
+
+        painelCounter.add(counter);
+        painelCounter.setBorder(new EmptyBorder(3,3,3,3));
+        painelCounter.setBackground(Color.BLACK);
+
+        start.setPreferredSize(new Dimension(100,100));
+        stop.setPreferredSize(new Dimension(100,100));
+        reset.setPreferredSize(new Dimension(100,100));
+        bandeira.setPreferredSize(new Dimension(100,100));
+
+        start.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(th==null){
+                    th = new Thread(main.this::run);
+                    th.start();
+                }
+            }
+        });
+
+        stop.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(th!=null){
+                    th = null;
+                }
+            }
+        });
+
+        reset.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                textTimer.setText("0");
+                th=null;
+                }
+        });
+
+        bandeira.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int aux = Integer.parseInt(counter.getText());
+                if(aux<=0) aux = 0;
+                    else aux=aux-1;
+                counter.setText(Integer.toString(aux));
+            }
+        });
+
+        painel.add(painelCounter);
+        painel.add(painelTextTimer);
+        painel.add(start);
+        painel.add(stop);
+        painel.add(reset);
+        painel.add(bandeira);
+
+        janela.add(painel);
+
+        janela.setVisible(true);
+
+    }
+
+    @Override
+    public void run() {
+        int i;
+
+        while(th!= null){
+            i = Integer.parseInt(textTimer.getText());
+
+            try{
+                th.sleep(1000);
+                if(th==null) break;
+            }
+            catch(InterruptedException e){
+                break;
+            }
+        textTimer.setText(Integer.toString(i+1));
+        }
+
+
+    }
+
+    public static void main(String[] args) {
+        new main();
+        //Field f = new Field();
+        //f.create();
+    }
+}
